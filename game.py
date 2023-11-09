@@ -34,7 +34,7 @@ game = {
     "x_turn": True,
     "gameover": False
 }
-def play(game, position):
+def play(game, position, selected_player):
     board = game["board"]
     print(game["active_board"] != -1 )
     if (board[position[2]][position[1]][position[0]] != 0 or 
@@ -42,7 +42,8 @@ def play(game, position):
         position[2] in game["locked_board"] or
         not 0 <= position[0] <= 2 or
         not 0 <= position[1] <= 2 or
-        not 0 <= position[2] <= 8):
+        not 0 <= position[2] <= 8 or
+        (selected_player == 'x') != game["x_turn"]):
         print("INVALID MOVE")
         return
     else:
@@ -106,8 +107,8 @@ app.add_middleware(
 async def main():
     return {"data": game}
 
-@app.post("/play/{col}/{row}/{board}")
-async def play_move(col: int, row: int, board: int):
-    position = (col, row, board)
-    play(game, position)
+@app.post("/play/{col}/{row}/{board}/{selected_player}")
+async def play_move(col: int, row: int, board: int, selected_player: str):
+    position = (col, row, board ,selected_player)
+    play(game, position, selected_player)
     return {"message": game}
