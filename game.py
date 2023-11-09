@@ -58,11 +58,13 @@ def play(game, position):
         print(i, check_game_over(i))
         game_over, winner = check_game_over(i)
         if game_over:
+            print(winner)
             game["locked_board"].append(n)
-            board[position[-1]][n//3][n % 3]
+            board[-1][n//3][n % 3] = winner
+    return {"data": game}
 
-play(game, (1,2, 1))
-play(game, (2,1, 1))
+# play(game, (1,2, 1))
+# play(game, (2,1, 1))
 
 
 # # Example usage
@@ -100,6 +102,12 @@ app.add_middleware(
 )
 
 
-@app.get("/")
+@app.get("/game")
 async def main():
     return {"data": game}
+
+@app.post("/play/{col}/{row}/{board}")
+async def play_move(col: int, row: int, board: int):
+    position = (col, row, board)
+    play(game, position)
+    return {"message": game}
